@@ -100,9 +100,18 @@ try {
         }
         if (count($segments) === 3 && ctype_digit($segments[1]) && $segments[2] === 'participants' && $method === 'GET') {
             $eventId = (int) $segments[1];
+            $event = $eventModel->getById($eventId);
+            if (!$event) {
+                jsonResponse(404, ['message' => 'Event not found.']);
+            }
             $participants = $eventModel->participantsByEvent($eventId);
             jsonResponse(200, [
-                'event_id' => $eventId,
+                'event' => [
+                    'event_id' => $event['event_id'],
+                    'title' => $event['title'],
+                    'venue' => $event['venue'],
+                    'event_date' => $event['event_date'],
+                ],
                 'participants_count' => count($participants),
                 'participants' => $participants,
             ]);
@@ -146,9 +155,17 @@ try {
         }
         if (count($segments) === 3 && ctype_digit($segments[1]) && $segments[2] === 'events' && $method === 'GET') {
             $participantId = (int) $segments[1];
+            $participant = $participantModel->getById($participantId);
+            if (!$participant) {
+                jsonResponse(404, ['message' => 'Participant not found.']);
+            }
             $events = $participantModel->eventsByParticipant($participantId);
             jsonResponse(200, [
-                'participant_id' => $participantId,
+                'participant' => [
+                    'participant_id' => $participant['participant_id'],
+                    'full_name' => $participant['full_name'],
+                    'email' => $participant['email'],
+                ],
                 'events_count' => count($events),
                 'events' => $events,
             ]);
