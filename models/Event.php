@@ -6,6 +6,16 @@ class Event
     {
     }
 
+    private function normalizePayload(array $data): array
+    {
+        return [
+            'title' => trim((string) ($data['title'] ?? '')),
+            'description' => isset($data['description']) ? trim((string) $data['description']) : null,
+            'venue' => trim((string) ($data['venue'] ?? '')),
+            'event_date' => trim((string) ($data['event_date'] ?? '')),
+        ];
+    }
+
     public function getAll(): array
     {
         $stmt = $this->db->query('SELECT * FROM events ORDER BY event_date, event_id');
@@ -22,22 +32,24 @@ class Event
 
     public function create(array $data): array
     {
+        $payload = $this->normalizePayload($data);
         $stmt = $this->db->prepare(
             'INSERT INTO events (title, description, venue, event_date)
              VALUES (:title, :description, :venue, :event_date)
              RETURNING *'
         );
         $stmt->execute([
-            'title' => $data['title'],
-            'description' => $data['description'] ?? null,
-            'venue' => $data['venue'],
-            'event_date' => $data['event_date'],
+            'title' => $payload['title'],
+            'description' => $payload['description'],
+            'venue' => $payload['venue'],
+            'event_date' => $payload['event_date'],
         ]);
         return $stmt->fetch();
     }
 
     public function update(int $eventId, array $data): ?array
     {
+        $payload = $this->normalizePayload($data);
         $stmt = $this->db->prepare(
             'UPDATE events
              SET title = :title,
@@ -49,10 +61,10 @@ class Event
         );
         $stmt->execute([
             'event_id' => $eventId,
-            'title' => $data['title'],
-            'description' => $data['description'] ?? null,
-            'venue' => $data['venue'],
-            'event_date' => $data['event_date'],
+            'title' => $payload['title'],
+            'description' => $payload['description'],
+            'venue' => $payload['venue'],
+            'event_date' => $payload['event_date'],
         ]);
         $event = $stmt->fetch();
         return $event ?: null;

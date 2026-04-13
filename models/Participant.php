@@ -6,6 +6,15 @@ class Participant
     {
     }
 
+    private function normalizePayload(array $data): array
+    {
+        return [
+            'full_name' => trim((string) ($data['full_name'] ?? '')),
+            'email' => strtolower(trim((string) ($data['email'] ?? ''))),
+            'phone' => isset($data['phone']) ? trim((string) $data['phone']) : null,
+        ];
+    }
+
     public function getAll(): array
     {
         $stmt = $this->db->query('SELECT * FROM participants ORDER BY participant_id');
@@ -22,21 +31,23 @@ class Participant
 
     public function create(array $data): array
     {
+        $payload = $this->normalizePayload($data);
         $stmt = $this->db->prepare(
             'INSERT INTO participants (full_name, email, phone)
              VALUES (:full_name, :email, :phone)
              RETURNING *'
         );
         $stmt->execute([
-            'full_name' => $data['full_name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
+            'full_name' => $payload['full_name'],
+            'email' => $payload['email'],
+            'phone' => $payload['phone'],
         ]);
         return $stmt->fetch();
     }
 
     public function update(int $participantId, array $data): ?array
     {
+        $payload = $this->normalizePayload($data);
         $stmt = $this->db->prepare(
             'UPDATE participants
              SET full_name = :full_name,
@@ -47,9 +58,9 @@ class Participant
         );
         $stmt->execute([
             'participant_id' => $participantId,
-            'full_name' => $data['full_name'],
-            'email' => $data['email'],
-            'phone' => $data['phone'] ?? null,
+            'full_name' => $payload['full_name'],
+            'email' => $payload['email'],
+            'phone' => $payload['phone'],
         ]);
         $participant = $stmt->fetch();
         return $participant ?: null;
