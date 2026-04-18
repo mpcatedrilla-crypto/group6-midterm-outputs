@@ -1,6 +1,6 @@
 # Group 6 - Team Members & Roles
 
-## Project: Events Management API with Laravel Sanctum
+## Project: Events Management API with HTTP Basic Authentication
 
 ### Team Members
 
@@ -28,10 +28,10 @@
 - Database schema design and relationships
 
 ### tzahhhahaha
-- Implemented User model with HasApiTokens trait
-- Created AuthController with login/logout/register methods
-- Configured Sanctum authentication guard
-- Token generation and validation logic
+- Implemented User model
+- Created AuthController with validateBasicAuth method
+- Configured HTTP Basic Authentication decoding
+- 401 unauthorized response handling
 
 ### yumaki00
 - Created Event Eloquent model
@@ -46,30 +46,29 @@
 - Event-specific participant queries
 
 ### rayvenedburato
-- Defined API routes with Sanctum middleware protection
-- Created database seeders with sample data
+- Defined API routes with Basic Auth protection
+- Created database seeders with sample data (1,111 records)
 - Setup Laravel bootstrap and middleware
 - Comprehensive README documentation
+- TEAM.md documentation
 
 ## API Endpoints Overview
 
-### Authentication (Public)
-- `POST /api/login` - User login
-- `POST /api/register` - User registration
+### Authentication Test
+- `GET /api/auth-test` - Verify Basic Auth credentials
 
-### Protected Routes (Bearer Token Required)
-- `POST /api/logout` - User logout
-- `GET /api/user` - Get current user
+### Protected Routes (Basic Auth Required)
+All routes require: `Authorization: Basic base64(email:password)`
 
 #### Events
-- `GET /api/events` - List all events
+- `GET /api/events` - List all events (100 records)
 - `GET /api/events/{id}` - Get single event
 - `POST /api/events` - Create event
 - `PUT /api/events/{id}` - Update event
 - `DELETE /api/events/{id}` - Delete event
 
 #### Participants
-- `GET /api/participants` - List all participants
+- `GET /api/participants` - List all participants (1,000 records)
 - `GET /api/participants/{id}` - Get single participant
 - `GET /api/participants/event/{event_id}` - List by event
 - `POST /api/participants` - Register participant
@@ -79,7 +78,7 @@
 ## Technologies Used
 
 - **Framework:** Laravel 10.x
-- **Authentication:** Laravel Sanctum
+- **Authentication:** HTTP Basic Authentication
 - **Database:** PostgreSQL
 - **Language:** PHP 8.1+
 - **API Style:** RESTful JSON API
